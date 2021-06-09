@@ -1,2 +1,3 @@
 # PyAngel
-pdf converter and notifier for The Last Angel
+Plan: A "reader" for TheLastAngel capable of converting to a PDF and notifying of changes.
+Actuality: Dear god HTML is hard.
