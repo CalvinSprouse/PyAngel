@@ -29,6 +29,11 @@ class LastAngelPipeline:
             json_lines_file.close()
 
     def _exporter_for_item(self, item):
+        """
+        Gets an exporter ready for an item passed from process_item
+        :param item: an item (dict) passed from the spider
+        :return: an exporter object JsonLinesItemExporter
+        """
         adapter = ItemAdapter(item)
         thread = adapter.get("base-thread")
         if thread not in self.thread_to_exporter:
@@ -40,6 +45,13 @@ class LastAngelPipeline:
         return self.thread_to_exporter[thread][0]
 
     def process_item(self, item, spider):
+        """
+        Takes a yielded bit of data from the spider as input and decides weather or not to keep it, if so then
+        gets an exporter from the _exporter_for_item func and exports the data
+        :param item: an item (dict) passed from the spider
+        :param spider: a ref to the spider
+        :return: the item for logging purposes i think
+        """
         adapter = ItemAdapter(item)
         if adapter.get("threadmark") in self.remove_names_list:
             raise DropItem(f"Unwanted item found from remove_names_list "
@@ -47,5 +59,8 @@ class LastAngelPipeline:
         elif any([adapter.get("threadmark") in item for item in self.remove_names_list]):
             raise DropItem(f"Unwanted item found from remove_contains_list "
                            f"{adapter.get('threadmark')} for post #{adapter.get('post-id')}")
+
         self._exporter_for_item(item).export_item(item)
         return item
+
+
