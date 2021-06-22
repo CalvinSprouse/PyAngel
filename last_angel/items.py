@@ -10,6 +10,9 @@ class ScrapedChapter(scrapy.Item):
     url = scrapy.Field()
     raw_html = scrapy.Field()
 
+    unique_key = ("content_name", "post_id")
+    dont_save = "book_name"
+
     def __repr__(self):
         return str(
             f"{{content_name={self['content_name']}, post_id={self['post_id']}, "

@@ -4,8 +4,8 @@ from scrapy.exceptions import DropItem
 import os
 
 
-class LastAngelPipeline:
-    save_dir = "chapters"
+class FileOutputPipeline:
+    save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "chapters")
 
     def __init__(self):
         self.thread_to_exporter = None
@@ -34,6 +34,30 @@ class LastAngelPipeline:
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
         self._exporter_for_item(item).export_item(item)
-        self.post_ids_recorded.add(adapter.get("post_id"))
-        self.content_names_recorded.add(adapter.get("content_name"))
         return item
+
+
+class CheckDuplicatesPipeline:
+    def __init__(self):
+        self.unique_values_logged = set()
+
+    def process_item(self, item, spider):
+        unique_keys = getattr(item, "unique_key", None)
+        if not unique_keys:
+            return item
+        keys = convert_to_tuple(unique_keys)
+        unique_value = None
+        try:
+            unique_value = "-".join(map(str, [item.get(k) for k in keys]))
+        except KeyError:
+            # TODO: Find way to access spider logger
+            pass
+        if unique_value in self.unique_values_logged:
+            raise DropItem(f"Duplicate item {unique_value}")
+        else:
+            self.unique_values_logged.add(unique_value)
+            return item
+
+
+def convert_to_tuple(possible_tuple):
+    return possible_tuple if isinstance(possible_tuple, (tuple, list)) else (possible_tuple,)
