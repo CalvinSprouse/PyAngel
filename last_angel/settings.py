@@ -19,15 +19,18 @@ NEWSPIDER_MODULE = 'last_angel.spiders'
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 0
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
-CONCURRENT_REQUESTS_PER_IP = 32
+CONCURRENT_REQUESTS_PER_IP = 8
+
+# Retry HTTP codes
+RETRY_HTTP_CODES = [429]
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
@@ -44,15 +47,17 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-# SPIDER_MIDDLEWARES = {
-#    'last_angel.middlewares.LastAngelSpiderMiddleware': 543,
-# }
+# TODO: Write custom retry middleware for 429 responses
+SPIDER_MIDDLEWARES = {
+    'last_angel.middlewares.LastAngelSpiderMiddleware': 100,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'last_angel.middlewares.LastAngelDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    'last_angel.middlewares.LastAngelDownloaderMiddleware': 200,
+    'last_angel.middlewares.TooManyRequestsRetryMiddleware': 100,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -63,7 +68,8 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'last_angel.pipelines.LastAngelPipeline': 100,
+    "last_angel.pipelines.CheckDuplicatesPipeline": 200,
+    'last_angel.pipelines.FileOutputPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
