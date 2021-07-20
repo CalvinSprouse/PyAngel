@@ -137,3 +137,6 @@ if __name__ == "__main__":
     process = CrawlerProcess(get_project_settings())
     process.crawl("last_angel_spider")
     process.start()
+
+# TODO: Detect if there are new chapters (put this in the main piece of software not the spider NOR the reader
+# TODO: Detect if chapters already exist before running and if so move them to a single depth backup? (also in main)
