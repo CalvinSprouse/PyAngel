@@ -11,7 +11,6 @@ class ScrapedChapter(scrapy.Item):
     raw_html = scrapy.Field()
 
     unique_key = ("content_name", "post_id")
-    dont_save = "book_name"
 
     def __repr__(self):
         return str(

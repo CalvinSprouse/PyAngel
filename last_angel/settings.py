@@ -1,3 +1,5 @@
+import os
+
 # Scrapy settings for last_angel project
 #
 # For simplicity, this file contains only settings considered important or
@@ -11,6 +13,11 @@ BOT_NAME = 'last_angel'
 
 SPIDER_MODULES = ['last_angel.spiders']
 NEWSPIDER_MODULE = 'last_angel.spiders'
+
+# Project save locations
+BASE_SAVE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chapters")
+DATA_SAVE_DIR = os.path.join(BASE_SAVE_DIR, "data")
+READER_SAVE_DIR = os.path.join(BASE_SAVE_DIR, "reader")
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'last_angel (+http://www.yourdomain.com)'
@@ -47,7 +54,6 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-# TODO: Write custom retry middleware for 429 responses
 SPIDER_MIDDLEWARES = {
     'last_angel.middlewares.LastAngelSpiderMiddleware': 100,
 }
@@ -70,6 +76,7 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
     "last_angel.pipelines.CheckDuplicatesPipeline": 200,
     'last_angel.pipelines.FileOutputPipeline': 300,
+    "last_angel.pipelines.MakeReadablePipeline": 700,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
